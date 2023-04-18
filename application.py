@@ -42,6 +42,11 @@ def get_data_by_json(keyword):
         return {}
 
 
+@app.route('/')
+def hello_world():
+    return 'Hello from Flask!'
+
+
 @app.route('/hidden_edges', methods=['GET'])
 def hidden_edges():
     global hidden_datas
