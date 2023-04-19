@@ -8,6 +8,9 @@ from src.assets import mapdraw
 from src.assets import minpath
 from src.assets import example_pred_edge
 
+from src import dataresilience
+from src.assets import NetworkResilience
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
@@ -17,25 +20,14 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 base_url = 'data/'
 
 
-# get data and then output
-def get_data_by_keyword(keyword):
-    df = pd.read_csv(base_url + 'animal-crossing-fish-info.csv')
-    df['price'] = df['price'].astype(str)
-    price = df[df['name'] == keyword]['price'].iloc[0]
-    image = df[df['name'] == keyword]['image'].iloc[0].split('\t')[0] + '>'
-    fish_info = {'price': str(price), 'image': image}
-
-    return {'fish_info': fish_info}
-
-
 # get data from json
 def get_data_by_json(keyword):
-    if keyword == 'all':
-        with open('./data/npmdepgraph.min10.json', 'r') as fcc_file:
+    if keyword == 'map':
+        with open('./src/assets/railway_data.json', 'r') as fcc_file:
             fcc_data = json.load(fcc_file)
             return fcc_data
-    elif keyword == 'map':
-        with open('./src/assets/railway_data.json', 'r') as fcc_file:
+    elif keyword == 'paris':
+        with open('./src/dataset2/Paris_data_heavy.json', 'r') as fcc_file:
             fcc_data = json.load(fcc_file)
             return fcc_data
     else:
@@ -54,18 +46,19 @@ def hidden_edges():
     if request.method == 'GET':
         try:
             keyword = request.args.get('keywords')
+            hiddennodes, hiddenedges = NetworkResilience.gethidden(0)
+
+            hiddennodes = [int(d) for d in hiddennodes]
+            hiddenedges = [(int(d[0]), int(d[1])) for d in hiddenedges]
+
+            print(hiddennodes)
+            print(hiddenedges)
 
             hidden_datas = {
                 'status': 0,
-                'hiddennodes':[243, 1124, 394, 164, 2231, 2244, 144, 344, 2336, 2230],
-                'hiddenedges':[
-                {'source': 243, 'target': 1124},
-                {'source': 394, 'target': 164},
-                {'source': 2231, 'target': 2244},
-                {'source': 144, 'target': 344},
-                {'source': 2336, 'target': 2230},
-
-            ]}
+                'hiddennodes': hiddennodes,
+                'hiddenedges': hiddenedges
+            }
 
         except Exception as e:
             traceback.print_exc()
@@ -73,6 +66,24 @@ def hidden_edges():
 
         else:
             return jsonify(hidden_datas)
+
+
+@app.route('/attack_network', methods=['GET'])
+def attack_network():
+    global attack_datas
+    if request.method == 'GET':
+        try:
+            attack_china, attack_paris = dataresilience.get_attack_json()
+            attack_datas = {
+                'status': 0,
+                'attack_china': attack_china,
+                'attack_paris': attack_paris
+            }
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 1})
+
+        return jsonify(attack_datas)
 
 
 @app.route('/pred_edges', methods=['POST'])
@@ -102,6 +113,31 @@ def predict_edges():
 
         else:
             return jsonify(pred_edge)
+
+
+@app.route('/delete_nodes', methods=['POST'])
+def delete_nodes():
+    global delete_data
+
+    if request.method == 'POST':
+
+        try:
+            post_data = request.get_json()
+            node_id = post_data.get('nodeid')
+            delete_map_type = post_data.get('type')
+            before, after = NetworkResilience.delete_node(node_id, delete_map_type)
+            delete_data = {'status': 0,
+                           'beforedel': before,
+                           'afterdel': after}
+
+            print(delete_data)
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 1})
+
+        else:
+            return jsonify(delete_data)
 
 
 @app.route('/shortest_path', methods=['POST'])
@@ -154,7 +190,7 @@ def shortest_path_generate():
 
 @app.route('/map_generate', methods=['GET'])
 def map_generate():
-    global node_data
+    global node_all_data
 
     if request.method == 'GET':
         try:
@@ -162,6 +198,7 @@ def map_generate():
             node_data = get_data_by_json(keyword)
             minpath.init()
             example_pred_edge.init()
+            NetworkResilience.init()
 
         except Exception as e:
             traceback.print_exc()
@@ -171,24 +208,21 @@ def map_generate():
             return jsonify(node_data)
 
 
-@app.route('/data_generate', methods=['POST'])
-def data_generate():
-    global data
+@app.route('/paris_map_generate', methods=['GET'])
+def paris_map_generate():
+    global paris_node_data
 
-    if request.method == 'POST':
-
+    if request.method == 'GET':
         try:
-            post_data = request.get_json()
-            keyword = post_data.get('search')
-            data = get_data_by_keyword(keyword)
-            message = {'status': 'success'}
+            keyword = request.args.get('type')
+            paris_node_data = get_data_by_json(keyword)
 
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'status': 'fail'})
+            return None
 
         else:
-            return jsonify(message)
+            return jsonify(paris_node_data)
 
 
 @app.route('/get_data', methods=['GET'])

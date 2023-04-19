@@ -16,6 +16,7 @@ nodes, edges, neighbors = None, None, None
 
 
 def init():
+    print('init')
     global nodes, edges, neighbors
 
     '''
@@ -40,6 +41,9 @@ def init():
 
 # check if the start node and end node are in the nodes
 def is_in_nodes(start, end):
+    print(start, end)
+    print(type(start), type(end))
+    print(nodes['node'][0])
     if str(start) in nodes['node'].values.astype(str) and str(end) in nodes['node'].values.astype(str):
         return True
     else:

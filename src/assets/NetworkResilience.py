@@ -1,14 +1,43 @@
-from pre_proc_data import chinese_railway_prep
+# from pre_proc_data import chinese_railway_prep
 import pandas as pd
 import torch
 from torch_geometric.data import Data
 import networkx as nx
 import numpy as np
+import os
+import pickle
+
+Gchina, Gparis = None, None
+
+dfindexchina, dfindexparis = None, None
+
+def init():
+    global Gchina, Gparis, dfindexchina, dfindexparis
+    """
+    get the current path
+    """
+    current_path = os.path.abspath(os.path.dirname(__file__))
+    """
+    get the data path
+    """
+    df1_path = os.path.abspath(os.path.join(current_path, 'graph.pickle'))
+    df2_path = os.path.abspath(os.path.join(current_path, 'data2graph.pickle'))
+    dfi1_path = os.path.abspath(os.path.join(current_path, 'NRL_index.csv'))
+    dfi2_path = os.path.abspath(os.path.join(current_path, 'dataset2_index.csv'))
+
+    with(open(df1_path, 'rb')) as f:
+        Gchina = pickle.load(f)
+
+    with(open(df2_path, 'rb')) as f:
+        Gparis = pickle.load(f)
+
+    dfindexchina = pd.read_csv(dfi1_path)
+    dfindexparis = pd.read_csv(dfi2_path)
 
 
 # get the edge list
 def get_edge(df_org):
-    edge_df = df_org[['st_id','st_tg']]
+    edge_df = df_org[['st_id', 'st_tg']]
     df_sort = pd.concat([edge_df['st_id'], edge_df['st_tg']], axis=0, ignore_index=True)
     df_sort = pd.DataFrame(df_sort, columns=['data'])
     df_sort = df_sort.drop_duplicates(subset='data')
@@ -67,13 +96,13 @@ def get_data(df_node, df_edge):
     return data,G
 
 
-def get_graph(path):
-    data = pd.read_excel(path)  # read
-    df_org, pos = chinese_railway_prep(data)  # get clean data
-    df_edge = get_edge(df_org)
-    df_node = get_node(pos)
-    data,G = get_data(df_node, df_edge)
-    return G,df_node,df_edge
+# def get_graph(path):
+#     data = pd.read_excel(path)  # read
+#     df_org, pos = chinese_railway_prep(data)  # get clean data
+#     df_edge = get_edge(df_org)
+#     df_node = get_node(pos)
+#     data,G = get_data(df_node, df_edge)
+#     return G,df_node,df_edge
 
 
 def get_graph_2nd(df_node,df_edge):
@@ -168,15 +197,75 @@ def get_network_properties(G):
     return num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency
 
 
+def get_netindex(id, num):
+    if num == 0:
+        id = int(id)
+        raw_index = dfindexchina[dfindexchina['real_ID'] == id]['pro_ID'].values[0]
+    else:
+        raw_index = dfindexparis[dfindexparis['real_ID'] == id]['city_ID'].values[0]
+    # print(raw_index)
+    return raw_index
+
+
+def get_rawindex(id, num):
+    if num == 0:
+        id = int(id)
+        raw_index = dfindexchina[dfindexchina['pro_ID'] == id]['real_ID'].values[0]
+    else:
+        raw_index = dfindexparis[dfindexparis['city_ID'] == id]['real_ID'].values[0]
+    # print(raw_index)
+    return raw_index
+
+
+def gethidden(type):
+    """
+    get the current path
+    """
+    current_path = os.path.abspath(os.path.dirname(__file__))
+    """
+    get the data path
+    """
+    datahidden = os.path.abspath(os.path.join(current_path, '../../data/data1hidden.csv'))
+
+    hiddendata = pd.read_csv(datahidden)
+    # print(hiddendata)
+    hiddenedges = []
+    hiddennodes = []
+
+    for key, row in hiddendata.iterrows():
+        sournode = get_rawindex(row['source'], type)
+        targetnode = get_rawindex(row['target'], type)
+        hiddennodes.append(sournode)
+        hiddennodes.append(targetnode)
+        hiddenedges.append((sournode, targetnode))
+
+    hiddennodes = list(set(hiddennodes))
+    return hiddennodes, hiddenedges
+
+
+
 #---------------------------------------------------detele node ------------------------------------------------------------
-def delete_node(G,node_id):
-    G_delete = G.copy()
+def delete_node(id, num):
+    num = int(num)
+    node_id = get_netindex(id, num)
+    nowG = Gchina
+    if num == 1:
+        nowG = Gparis
+    G_delete = nowG.copy()
     G_delete.remove_node(node_id)
-    num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency = get_network_properties(G)
+    num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency = get_network_properties(nowG)
+    str_kshell = str(k_cores)
+    before = [str(num_nodes), str(num_edges), str(num_connected_components), str(Max_components_node), str(Max_components_edges), str_kshell,
+              str(density), str(diameter), str(avg_distance), str(efficiency)]
     df_G = pd.DataFrame({'G_before': [num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency]}, index=['Number of Nodes', 'Number of Edges', 'Number of Connected Components', 'Size of Largest Connected Component', 'Number of Edges in Largest Connected Component', 'K-Cores', 'Density', 'Diameter', 'Average Distance', 'Efficiency'])
     num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency = get_network_properties(G_delete)
-    df_G['G_after'] = [num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency]
-    return df_G
+    str_kshell = str(k_cores)
+    after = [str(num_nodes), str(num_edges), str(num_connected_components), str(Max_components_node), str(Max_components_edges), str_kshell,
+              str(density), str(diameter), str(avg_distance), str(efficiency)]
+    df_G['G_after'] = [num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, str_kshell, density, diameter, avg_distance, efficiency]
+    print(df_G)
+
+    return before, after
 
 
 def plot_degrees(G):
@@ -299,4 +388,6 @@ def plot_attack(G):
     return Attack_Ratio, relative_size, relative_size_deg, relative_size_betw, relative_size_kshell, relative_size_ci
 
 
-
+if __name__ == '__main__':
+    init()
+    delete_node(1370, 0)

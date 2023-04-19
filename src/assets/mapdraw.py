@@ -160,47 +160,6 @@ class initmap():
         # Add node positions to node attributes
         # nx.set_node_attributes(G, pos, 'pos')
 
-        # format = {
-        #     "nodes": [
-        #         {
-        #             "color": "#4f19c7",
-        #             "label": "jquery",
-        #             "attributes": {},
-        #             "y": -404.26147,
-        #             "x": -739.36383,
-        #             "id": "jquery",
-        #             "size": 4.7252817
-        #         }
-        #     ],
-        #     "edges": [
-        #         {
-        #             "sourceID": "jquery",
-        #             "attributes": {},
-        #             "targetID": "jsdom",
-        #             "size": 1
-        #         }
-        #     ]
-        # }
-
-        # nodesList = df9['st_id'].unique()
-        # nodes = []
-        #
-        # for item in nodesList:
-        #     node_temp = {}
-        #     node_temp['name'] = item
-        #     node_temp['value'] = [pos[item][0], pos[item][1]]
-        #     nodes.append(node_temp)
-        #
-        # edges = [
-        #     {
-        #         "source": st_id,
-        #         "target": st_tg,
-        #         "train": train
-        #     } for st_id, st_tg, train in zip(df9['st_id'], df9['st_tg'], df9['train']) if st_tg != -1
-        # ]
-        #
-        # a = {'nodes': nodes, 'edges': edges}
-        # b = json.dump(a, open('railway_data.json', 'w'), cls=NumpyEncoder)
 
 
 def getData():
