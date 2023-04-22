@@ -308,10 +308,24 @@ load saved model and config
 ================================================================================================= '''
 def edge_pred_import_model(folder_name='edge_pred_conf'):
     # load the saved PyTorch model state dictionary
-    model_state_dict = torch.load(f'{folder_name}/model.pt')
+    # create folder if it doesn't exist
+    """
+    get the current path
+    """
+    current_path = os.path.abspath(os.path.dirname(__file__))
+    """
+    get the data path
+    """
+    folder_name = os.path.abspath(os.path.join(current_path, 'dataset2_edge_pred_conf'))
+    # load the saved PyTorch model state dictionary
+
+    model_path = os.path.abspath(os.path.join(folder_name, 'model.pt'))
+    model_state_dict = torch.load(model_path)
+
+    channel_path = os.path.abspath(os.path.join(folder_name, 'channels.json'))
 
     # load the channel values from the JSON file
-    with open(f'{folder_name}/channels.json', 'r') as f:
+    with open(channel_path, 'r') as f:
         data = json.load(f)
         input_channel = data['input_channel']
         output_channel = data['output_channel']
@@ -321,8 +335,9 @@ def edge_pred_import_model(folder_name='edge_pred_conf'):
     model = ModelFFW_new_edge_pred(input_channel, output_channel, hidden_channel)
     model.load_state_dict(model_state_dict)
 
+    scaler_path = os.path.abspath(os.path.join(folder_name, 'scaler.pkl'))
     # load the saved Scaler object
-    scaler = joblib.load(f'{folder_name}/scaler.pkl')
+    scaler = joblib.load(scaler_path)
 
     return model, scaler, input_channel, output_channel, hidden_channel
 

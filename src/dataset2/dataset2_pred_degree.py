@@ -156,30 +156,54 @@ def train_model_predict_node_degree(df_pos):
 export trained model and config
 ================================================================================================= '''
 def degree_pred_export_model(model, input_channel, output_channel, hidden_channel, scaler, folder_name='degree_pred_conf'):
+
+    """
+    get the current path
+    """
+    current_path = os.path.abspath(os.path.dirname(__file__))
+
     # create folder if it doesn't exist
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
+    if not os.path.exists(current_path):
+        os.makedirs(current_path)
+    """
+    get the data path
+    """
+    folder_name = os.path.abspath(os.path.join(current_path, 'dataset2_degree_pred_conf'))
+    torch_path = os.path.abspath(os.path.join(folder_name, 'model.pt'))
+    joblib_path = os.path.abspath(os.path.join(folder_name, 'scaler.pkl'))
 
     # save the PyTorch model to disk
-    torch.save(model.state_dict(), f'{folder_name}/model.pt')
+    torch.save(model.state_dict(), torch_path)
 
     # save the Scaler object to disk
-    joblib.dump(scaler, f'{folder_name}/scaler.pkl')
+    joblib.dump(scaler, joblib_path)
 
     # save the channel values to a JSON file
     data = {'input_channel': input_channel, 'output_channel': output_channel, 'hidden_channel': hidden_channel}
-    with open(f'{folder_name}/channels.json', 'w') as f:
+    json_path = os.path.abspath(os.path.join(folder_name, 'channels.json'))
+    with open(json_path, 'w') as f:
         json.dump(data, f)
 
 ''' =================================================================================================
 load saved model and config
 ================================================================================================= '''
 def degree_pred_import_model(folder_name='degree_pred_conf'):
+    """
+    get the current path
+    """
+    current_path = os.path.abspath(os.path.dirname(__file__))
+    """
+    get the data path
+    """
+    folder_name = os.path.abspath(os.path.join(current_path, 'dataset2_degree_pred_conf'))
     # load the saved PyTorch model state dictionary
-    model_state_dict = torch.load(f'{folder_name}/model.pt')
+    model_path = os.path.abspath(os.path.join(folder_name, 'model.pt'))
+    model_state_dict = torch.load(model_path)
+
+    channel_path = os.path.abspath(os.path.join(folder_name, 'channels.json'))
 
     # load the channel values from the JSON file
-    with open(f'{folder_name}/channels.json', 'r') as f:
+    with open(channel_path, 'r') as f:
         data = json.load(f)
         input_channel = data['input_channel']
         output_channel = data['output_channel']
@@ -189,8 +213,9 @@ def degree_pred_import_model(folder_name='degree_pred_conf'):
     model = ModelFFW_pred_degree(input_channel, output_channel, hidden_channel)
     model.load_state_dict(model_state_dict)
 
+    scaler_path = os.path.abspath(os.path.join(folder_name, 'scaler.pkl'))
     # load the saved Scaler object
-    scaler = joblib.load(f'{folder_name}/scaler.pkl')
+    scaler = joblib.load(scaler_path)
 
     return model, scaler, input_channel, output_channel, hidden_channel
 

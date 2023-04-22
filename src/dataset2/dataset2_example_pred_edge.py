@@ -2,14 +2,26 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
-from dataset2_pred_edge import *
-from dataset2_pred_degree import *
+from .dataset2_pred_edge import *
+from .dataset2_pred_degree import *
 
 
-def main():
+def main(new_node_lat, new_node_lon):
+    new_node_lat = float(new_node_lat)
+    new_node_lon = float(new_node_lon)
+
+    """
+    get the current path
+    """
+    current_path = os.path.abspath(os.path.dirname(__file__))
+    """
+    get the data path
+    """
+    df_path = os.path.abspath(os.path.join(current_path, 'dataset2_df_nodes.csv'))
+    pos_path = os.path.abspath(os.path.join(current_path, 'dataset2_df_edges.csv'))
     # load data
-    df_edge = pd.read_csv('dataset2_df_edges.csv')
-    df_node = pd.read_csv('dataset2_df_nodes.csv')
+    df_edge = pd.read_csv(pos_path)
+    df_node = pd.read_csv(df_path)
 
     df_edge = df_edge[['source', 'target', 'distance', 'type_num']] # keep onlt needed(want) cols
     df_node = df_node[['node_id', 'lat', 'lon', 'type_num']] # keep only needed(want) cols
@@ -19,8 +31,8 @@ def main():
     df_edge.iloc[:, 2:4] = scaler_labels.fit_transform(df_edge.iloc[:, 2:4])
 
     # define new node
-    new_node_lat = 2.23
-    new_node_lon = 48.41
+    # new_node_lat = 2.23
+    # new_node_lon = 48.41
 
     ''' Degree train again ''' # it will take sometime, however you can use trined model following part
     # n_degree = main_pred_degree(df_data = df_edge, df_pos = df_node,
@@ -52,6 +64,8 @@ def main():
 
     print(f'pred edge: \n{df_new_edge.loc[df_new_edge["target"] == new_node]}')
 
+    df_new_edges = df_new_edge.loc[df_new_edge["target"] == new_node]
+
     '''
     plot graph
     - jsut for chekcing, no need if perform on real UI (use Yuqin dispplay instead)
@@ -66,7 +80,19 @@ def main():
     nx.set_node_attributes(G2, node_attrs)
 
     # plot all nodes and edges on the map
-    plot_all_on_map(G = G2, high_light_node1=[new_node], high_light_node2=[neighbor_node[0]])
+    # plot_all_on_map(G=G2, high_light_node1=[new_node], high_light_node2=[neighbor_node[0]])
+
+    new_neighbor_node = []
+    new_edges_distance = []
+    new_edges_type_num = []
+
+    if df_new_edges.shape[0] > 0:
+        for index, row in df_new_edges.iterrows():
+            new_neighbor_node.append(row['source'])
+            new_edges_distance.append(row['distance'])
+            new_edges_type_num.append(row['type_num'])
+
+    return n_degree, new_neighbor_node, new_edges_distance, new_edges_type_num
 
 if __name__ == "__main__":
     main()

@@ -7,6 +7,7 @@ import json
 from src.assets import mapdraw
 from src.assets import minpath
 from src.assets import example_pred_edge
+from src.dataset2 import dataset2_example_pred_edge
 
 from src import dataresilience
 from src.assets import NetworkResilience
@@ -113,6 +114,31 @@ def predict_edges():
 
         else:
             return jsonify(pred_edge)
+
+@app.route('/pred_paris_edges', methods=['POST'])
+def predict_paris_edges():
+    global pred_paris_edge
+
+    if request.method == 'POST':
+
+        try:
+            post_data = request.get_json()
+            lon = post_data.get('longitude')
+            lat = post_data.get('latitude')
+
+            n_degree, new_neighbor_node, new_edges_distance, new_edges_type_num = dataset2_example_pred_edge.main(lat, lon)
+
+            pred_paris_edge = {'status': 0,
+                         'n_degree': n_degree,
+                         'new_neighbor_node': new_neighbor_node,
+                         'new_edges_distance': new_edges_distance,
+                         'new_edges_type_num': new_edges_type_num}
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 1})
+
+        else:
+            return jsonify(pred_paris_edge)
 
 
 @app.route('/delete_nodes', methods=['POST'])
