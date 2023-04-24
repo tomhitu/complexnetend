@@ -204,7 +204,7 @@ def getG(snode, tnode):
 
 
 def setdatajson():
-    nodes_cluster = pd.read_csv('../../data/df_pos_cluster.csv')
+    nodes_cluster = pd.read_csv('../../data/df_pos_cluster.csv', encoding='ISO-8859-1')
     edges_cluster = pd.read_csv('../../data/df_edge_cluster_light.csv')
     nodes = []
     # state_num
@@ -230,6 +230,8 @@ def setdatajson():
         node_temp = {}
         node_temp['name'] = row['node']
         node_temp['value'] = [row['lon'], row['lat']]
+        node_temp['city'] = row['city']
+        node_temp['state'] = row['state']
         node_temp['state_num'] = row['state_num']
         node_temp['degree'] = row['degree']
         node_temp['Degree_Centrality'] = row['Degree_Centrality']

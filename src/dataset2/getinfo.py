@@ -24,6 +24,7 @@ def getinfo():
     edges_cluster = pd.read_csv('dataset2_df_edge_cluster_light.csv')
     nodes = []
     # node_id
+    # node_name
     # lon
     # lat
     # type
@@ -45,6 +46,7 @@ def getinfo():
     for item, row in nodes_cluster.iterrows():
         node_temp = {}
         node_temp['name'] = row['node_id']
+        node_temp['original_name'] = row['node_name']
         node_temp['value'] = [row['lat'], row['lon']]
         node_temp['type'] = row['type']
         node_temp['type_num'] = row['type_num']

@@ -141,7 +141,7 @@ def train_model_predict_node_degree(df_pos):
     
     return model, scaler, input_channel, output_channel, hidden_channel
 
-44
+
 ''' =================================================================================================
 export trained model and config
 ================================================================================================= '''
@@ -226,7 +226,8 @@ def pred_degree(lat, lon, model_degree, scaler_degree, input_channel, output_cha
     
     return round(pred.detach().numpy()[0][0])
     # return pred.detach().numpy()[0]
-    
+
+
 ''' =================================================================================================
 function main pred degree
 ================================================================================================= '''
@@ -234,7 +235,9 @@ def main_pred_degree(df_data, df_pos, new_node_lat, new_node_lon, train_new = Fa
                     folder_name = 'degree_pred_conf'
                     ):
     # Create graph # direct graph
-    G = nx.from_pandas_edgelist(df_data, source='st_id', target='st_tg', edge_attr=['train_max_speed', 'distance', 'travel_time'], create_using=nx.DiGraph())
+    # G = nx.from_pandas_edgelist(df_data, source='st_id', target='st_tg', edge_attr=['train_max_speed', 'distance', 'travel_time'], create_using=nx.DiGraph())
+    G = nx.from_pandas_edgelist(df_data, source='st_id', target='st_tg',
+                                edge_attr=['train_max_speed', 'distance', 'travel_time'])
 
     # add node attributes from DataFrame to graph
     for node, data in df_pos.set_index('node').iterrows():

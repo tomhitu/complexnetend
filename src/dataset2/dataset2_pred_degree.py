@@ -242,7 +242,8 @@ def main_pred_degree(df_data, df_pos, new_node_lat, new_node_lon, train_new = Fa
                     folder_name = 'dataset2_degree_pred_conf'
                     ):
     # Create graph # direct graph
-    G = nx.from_pandas_edgelist(df_data, source='source', target='target', edge_attr=['distance', 'type_num'], create_using=nx.DiGraph())
+    # G = nx.from_pandas_edgelist(df_data, source='source', target='target', edge_attr=['distance', 'type_num'], create_using=nx.DiGraph())
+    G = nx.from_pandas_edgelist(df_data, source='source', target='target', edge_attr=['distance', 'type_num'])
 
     # add node attributes from DataFrame to graph
     for node, data in df_pos.set_index('node_id').iterrows():
