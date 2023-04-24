@@ -390,4 +390,4 @@ def plot_attack(G):
 
 if __name__ == '__main__':
     init()
-    delete_node(1370, 0)
+    delete_node(851, 1)

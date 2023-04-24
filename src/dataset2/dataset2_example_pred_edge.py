@@ -15,8 +15,8 @@ def main(new_node_lat, new_node_lon):
     """
     get the data path
     """
-    df_path = os.path.abspath(os.path.join(current_path, 'dataset2_df_nodes.csv'))
-    pos_path = os.path.abspath(os.path.join(current_path, 'dataset2_df_edges.csv'))
+    df_path = os.path.abspath(os.path.join(current_path, 'dataset2_df_nodes_v3.csv'))
+    pos_path = os.path.abspath(os.path.join(current_path, 'dataset2_df_edges_v3.csv'))
     # load data
     df_edge = pd.read_csv(pos_path)
     df_node = pd.read_csv(df_path)
