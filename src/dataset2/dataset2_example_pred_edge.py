@@ -1,5 +1,3 @@
-import numpy as np
-import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
 from .dataset2_pred_edge import *
@@ -95,4 +93,4 @@ def main(new_node_lat, new_node_lon):
     return n_degree, new_neighbor_node, new_edges_distance, new_edges_type_num
 
 if __name__ == "__main__":
-    main()
+    main(2, 48)

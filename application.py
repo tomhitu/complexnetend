@@ -4,7 +4,6 @@ from flask_cors import CORS
 import traceback
 import json
 
-from src.assets import mapdraw
 from src.assets import minpath
 from src.assets import example_pred_edge
 from src.dataset2 import dataset2_example_pred_edge
@@ -176,11 +175,6 @@ def shortest_path_generate():
             post_data = request.get_json()
             snode = post_data.get('startnode')
             enode = post_data.get('endnode')
-            shortest_path, travel_distance, travel_time = mapdraw.getG(snode, enode)
-            travel_distance = float(travel_distance)
-            print(type(shortest_path))
-            print(type(travel_distance))
-            print(type(travel_time))
             transfer_time = 30/60/24
             less_route, less_time, less_distance, shortest_route, shortest_distance = minpath.get_path(snode, enode, transfer_time)
             print(type(less_route))
@@ -204,7 +198,7 @@ def shortest_path_generate():
             print(type(less_distance))
             print(type(shortest_route))
             print(type(shortest_distance))
-            data = {'status': 0, 'route': shortest_path, 'distance': travel_distance, 'time': travel_time, 'less_route': less_route, 'less_time': arr_time, 'less_distance': less_distance, 'shortest_route': shortest_route, 'shortest_distance': shortest_distance}
+            data = {'status': 0, 'less_route': less_route, 'less_time': arr_time, 'less_distance': less_distance, 'shortest_route': shortest_route, 'shortest_distance': shortest_distance}
 
         except Exception as e:
             traceback.print_exc()
