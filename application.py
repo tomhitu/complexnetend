@@ -7,6 +7,7 @@ import json
 from src.assets import minpath
 from src.assets import example_pred_edge
 from src.dataset2 import dataset2_example_pred_edge
+from src.dataset2 import minipath
 
 from src import dataresilience
 from src.assets import NetworkResilience
@@ -208,6 +209,27 @@ def shortest_path_generate():
             return jsonify(data)
 
 
+@app.route('/paris_shortest_path', methods=['POST'])
+def paris_shortest_path_generate():
+    global paris_shortest_data
+
+    if request.method == 'POST':
+
+        try:
+            post_data = request.get_json()
+            snode = post_data.get('startnode')
+            enode = post_data.get('endnode')
+            shortest_route, shortest_distance = minipath.get_path(snode, enode)
+            paris_shortest_data = {'status': 0, 'shortest_route': shortest_route, 'shortest_distance': shortest_distance}
+
+        except Exception as e:
+            traceback.print_exc()
+            return jsonify({'status': 1})
+
+        else:
+            return jsonify(paris_shortest_data)
+
+
 @app.route('/map_generate', methods=['GET'])
 def map_generate():
     global node_all_data
@@ -217,6 +239,7 @@ def map_generate():
             keyword = request.args.get('type')
             node_data = get_data_by_json(keyword)
             minpath.init()
+            minipath.init()
             example_pred_edge.init()
             NetworkResilience.init()
 
