@@ -43,6 +43,15 @@ def getinfo():
     # cluster_Closeness_Centrality
     # cluster_Betweenness_Centrality
     # cluster_Eigenvector_Centrality
+    maxclusternum = {
+        'cluster_lat_lon': 0,
+        'cluster_degree': 0,
+        'cluster_Degree_Centrality': 0,
+        'cluster_Clustering_Coefficients': 0,
+        'cluster_Closeness_Centrality': 0,
+        'cluster_Betweenness_Centrality': 0,
+        'cluster_Eigenvector_Centrality': 0,
+    }
     for item, row in nodes_cluster.iterrows():
         node_temp = {}
         node_temp['name'] = row['node_id']
@@ -51,6 +60,7 @@ def getinfo():
         node_temp['type'] = row['type']
         node_temp['type_num'] = row['type_num']
         node_temp['cluster_lat_lon'] = row['cluster_lat_lon']
+        maxclusternum['cluster_lat_lon'] = max(maxclusternum['cluster_lat_lon'], row['cluster_lat_lon'])
         node_temp['degree'] = row['degree']
         node_temp['Degree_Centrality'] = row['Degree_Centrality']
         node_temp['Clustering_Coefficients'] = row['Clustering_Coefficients']
@@ -58,11 +68,17 @@ def getinfo():
         node_temp['Betweenness_Centrality'] = row['Betweenness_Centrality']
         node_temp['Eigenvector_Centrality'] = row['Eigenvector_Centrality']
         node_temp['cluster_degree'] = row['cluster_degree']
+        maxclusternum['cluster_degree'] = max(maxclusternum['cluster_degree'], row['cluster_degree'])
         node_temp['cluster_Degree_Centrality'] = row['cluster_Degree_Centrality']
+        maxclusternum['cluster_Degree_Centrality'] = max(maxclusternum['cluster_Degree_Centrality'], row['cluster_Degree_Centrality'])
         node_temp['cluster_Clustering_Coefficients'] = row['cluster_Clustering_Coefficients']
+        maxclusternum['cluster_Clustering_Coefficients'] = max(maxclusternum['cluster_Clustering_Coefficients'], row['cluster_Clustering_Coefficients'])
         node_temp['cluster_Closeness_Centrality'] = row['cluster_Closeness_Centrality']
+        maxclusternum['cluster_Closeness_Centrality'] = max(maxclusternum['cluster_Closeness_Centrality'], row['cluster_Closeness_Centrality'])
         node_temp['cluster_Betweenness_Centrality'] = row['cluster_Betweenness_Centrality']
+        maxclusternum['cluster_Betweenness_Centrality'] = max(maxclusternum['cluster_Betweenness_Centrality'], row['cluster_Betweenness_Centrality'])
         node_temp['cluster_Eigenvector_Centrality'] = row['cluster_Eigenvector_Centrality']
+        maxclusternum['cluster_Eigenvector_Centrality'] = max(maxclusternum['cluster_Eigenvector_Centrality'], row['cluster_Eigenvector_Centrality'])
         nodes.append(node_temp)
 
     edges = []
@@ -76,6 +92,12 @@ def getinfo():
     # cluster_distance
     # cluster_type
     # cluster_across
+
+    maxedgenum = {
+        'cluster_across': 0,
+        'cluster_type': 0,
+        'cluster_distance': 0
+    }
 
     for item, row in edges_cluster.iterrows():
         edge_temp = {}
@@ -92,13 +114,18 @@ def getinfo():
         edge_temp['node_type_num'] = row['node_type_num']
         edge_temp['node_tg_type_num'] = row['node_tg_type_num']
         edge_temp['cluster_distance'] = row['cluster_distance']
+        maxedgenum['cluster_distance'] = max(maxedgenum['cluster_distance'], row['cluster_distance'])
         edge_temp['cluster_type'] = row['cluster_type']
+        maxedgenum['cluster_type'] = max(maxedgenum['cluster_type'], row['cluster_type'])
         edge_temp['cluster_across'] = row['cluster_across']
+        maxedgenum['cluster_across'] = max(maxedgenum['cluster_across'], row['cluster_across'])
 
         edges.append(edge_temp)
 
-    a = {'nodes': nodes, 'edges': edges}
-    b = json.dump(a, open('Paris_data_heavy.json', 'w'), cls=NumpyEncoder)
+    # a = {'nodes': nodes, 'edges': edges}
+    # b = json.dump(a, open('Paris_data_heavy.json', 'w'), cls=NumpyEncoder)
+    # c = json.dump(maxclusternum, open('Paris_maxclusternum.json', 'w'), cls=NumpyEncoder)
+    # d = json.dump(maxedgenum, open('Paris_maxedgenum.json', 'w'), cls=NumpyEncoder)
 
 
 if __name__ == '__main__':
