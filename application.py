@@ -47,7 +47,8 @@ def hidden_edges():
     if request.method == 'GET':
         try:
             keyword = request.args.get('keywords')
-            hiddennodes, hiddenedges = NetworkResilience.gethidden(0)
+            type = int(keyword)
+            hiddennodes, hiddenedges = NetworkResilience.gethidden(type)
 
             hiddennodes = [int(d) for d in hiddennodes]
             hiddenedges = [(int(d[0]), int(d[1])) for d in hiddenedges]

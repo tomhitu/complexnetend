@@ -9,10 +9,10 @@ import pickle
 
 Gchina, Gparis = None, None
 
-dfindexchina, dfindexparis = None, None
+dfindexchina, dfindexparis, dfrawindexparis = None, None, None
 
 def init():
-    global Gchina, Gparis, dfindexchina, dfindexparis
+    global Gchina, Gparis, dfindexchina, dfindexparis, dfrawindexparis
     """
     get the current path
     """
@@ -24,6 +24,7 @@ def init():
     df2_path = os.path.abspath(os.path.join(current_path, 'data2graph.pickle'))
     dfi1_path = os.path.abspath(os.path.join(current_path, 'NRL_index.csv'))
     dfi2_path = os.path.abspath(os.path.join(current_path, 'dataset2_index.csv'))
+    dfi2_raw_index = os.path.abspath(os.path.join(current_path, '../dataset2/dataset2_df_nodes_v3index.csv'))
 
     with(open(df1_path, 'rb')) as f:
         Gchina = pickle.load(f)
@@ -33,6 +34,7 @@ def init():
 
     dfindexchina = pd.read_csv(dfi1_path)
     dfindexparis = pd.read_csv(dfi2_path)
+    dfrawindexparis = pd.read_csv(dfi2_raw_index)
 
 
 # get the edge list
@@ -198,11 +200,11 @@ def get_network_properties(G):
 
 
 def get_netindex(id, num):
+    id = int(id)
     if num == 0:
-        id = int(id)
         raw_index = dfindexchina[dfindexchina['real_ID'] == id]['pro_ID'].values[0]
     else:
-        raw_index = dfindexparis[dfindexparis['real_ID'] == id]['city_ID'].values[0]
+        raw_index = dfindexparis[dfindexparis['real_ID'] == id]['pro_ID'].values[0]
     # print(raw_index)
     return raw_index
 
@@ -212,7 +214,12 @@ def get_rawindex(id, num):
         id = int(id)
         raw_index = dfindexchina[dfindexchina['pro_ID'] == id]['real_ID'].values[0]
     else:
-        raw_index = dfindexparis[dfindexparis['city_ID'] == id]['real_ID'].values[0]
+        id = int(id)
+        # tmp_name = dfindexparis[dfindexparis['pro_ID'] == id]['real_ID'].values[0]
+        # print(tmp_name)
+        # raw_index = dfrawindexparis[dfrawindexparis['node_name'] == tmp_name]['node_id'].values[0]
+        # print(raw_index)
+        raw_index = id
     # print(raw_index)
     return raw_index
 
@@ -225,7 +232,10 @@ def gethidden(type):
     """
     get the data path
     """
-    datahidden = os.path.abspath(os.path.join(current_path, '../../data/data1hidden.csv'))
+    if type == 0:
+        datahidden = os.path.abspath(os.path.join(current_path, '../../data/data1hidden.csv'))
+    else:
+        datahidden = os.path.abspath(os.path.join(current_path, '../../data/data2hidden_edges.csv'))
 
     hiddendata = pd.read_csv(datahidden)
     # print(hiddendata)
@@ -390,4 +400,5 @@ def plot_attack(G):
 
 if __name__ == '__main__':
     init()
-    delete_node(851, 1)
+    # delete_node(851, 1)
+    gethidden(1)
