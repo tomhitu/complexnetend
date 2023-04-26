@@ -204,7 +204,8 @@ def get_netindex(id, num):
     if num == 0:
         raw_index = dfindexchina[dfindexchina['real_ID'] == id]['pro_ID'].values[0]
     else:
-        raw_index = dfindexparis[dfindexparis['real_ID'] == id]['pro_ID'].values[0]
+        raw_index = id
+        # raw_index = dfindexparis[dfindexparis['real_ID'] == id]['pro_ID'].values[0]
     # print(raw_index)
     return raw_index
 
