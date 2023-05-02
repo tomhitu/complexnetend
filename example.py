@@ -267,3 +267,10 @@ def testdegreedistribution(G_path, degreejson, ifsave=True, ifshow=False):
         plt.yscale('log')
 
 
+def testgethidden(df_node_path, df_edge_path, lr, iftrain, foldername):
+    df_node = pd.read_csv(df_node_path)
+    df_edge = pd.read_csv(df_edge_path)
+    hidden_edge = tbox.gethidden(df_node, df_edge, lr, iftrain, foldername)
+    print(hidden_edge)
+
+

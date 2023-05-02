@@ -86,9 +86,10 @@ def test(model, data):
     auc = roc_auc_score(data.edge_label.cpu().numpy(), out.cpu().numpy())
     return auc
 
-def train(data):
+
+def train(data, lr=0.01):
     model = GCN(data.num_features, 128, 64)
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=0.01)
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=lr)
     criterion = torch.nn.BCEWithLogitsLoss()
     model.train()
     for epoch in range(1000):
@@ -159,12 +160,12 @@ def get_hidden_edges(dataname,Threshold,model,type):
 
 
 #根据点和边的csv文件，返回模型
-def train_save_model(node,edges):
+def train_save_model(node,edges,lrdata):
     df_node = pd.read_csv(node+'.csv')
     df_edge = pd.read_csv(edges + '.csv')
     data = get_data(df_node,df_edge)
     train_data, val_data, test_data = Split_F(data)
-    model = train(train_data)
+    model = train(train_data, lrdata)
     print("Training is completed and save the model as pre_hidden_model.pth ! ")
     torch.save(data,'data.pth')
     torch.save(model.state_dict(), 'pre_hidden_model.pth')
@@ -172,11 +173,11 @@ def train_save_model(node,edges):
 
 
 #给定一个数据的点和边还有要预测的边，返回预测的边的得分
-def get_pre_edges(df_node,df_edge,pre_edges,type):
+def get_pre_edges(df_node,df_edge,pre_edges,type, lrdata):
     data = get_data(df_node,df_edge)
     train_data, val_data, test_data = Split_F(data)
     if type == 1:
-        model = train(train_data)
+        model = train(train_data, lrdata)
     else:
         model = GCN(data.num_features, 128, 64)
         model.load_state_dict(torch.load('pre_hidden_model.pth'))
@@ -189,30 +190,33 @@ def get_pre_edges(df_node,df_edge,pre_edges,type):
     df_pre = pd.concat([df_edges, df_pre], axis=1)
     return df_pre
 
+
 #Pick a random number of points to predict
-def hidden_edges(df_node,df_edge,type):
-    data = get_data(df_node,df_edge)
+def hidden_edges(df_node, df_edge, lrdata, iftrain=False, folderpath='pre_hidden_model.pth'):
+    data = get_data(df_node, df_edge)
     train_data, val_data, test_data = Split_F(data)
-    if type == 1:
-        model = train(train_data)
-        torch.save(model.state_dict(), 'pre_hidden_model.pth')
+    if iftrain == True:
+        print('start training new model')
+        model = train(train_data, lrdata)
+        torch.save(model.state_dict(), folderpath)
     else:
+        print('load model')
         model = GCN(data.num_features, 128, 64)
-        model.load_state_dict(torch.load('pre_hidden_model.pth'))
+        model.load_state_dict(torch.load(folderpath))
     train_data.edge_label, train_data.edge_label_index = negative_sample(train_data)
-    out = get_out(model,train_data)
+    out = get_out(model, train_data)
     acc = roc_auc_score(train_data.edge_label.cpu().numpy(), out.cpu().numpy())
     df_pre = pd.DataFrame(out.cpu().numpy(), columns=['score'])
     df_edges = pd.DataFrame(train_data.edge_label_index.T.cpu().numpy(), columns=['source', 'target'])
     df_pre['label'] = df_pre['score'].apply(lambda x: 1 if x > 0.71 else 0)
     df_pre = pd.concat([df_edges, df_pre], axis=1)
     # df_pre = df_pre[df_pre['label'] == 1]
-    dfr_orig1 =  pd.DataFrame(data.edge_index.T.cpu().numpy(), columns=['source', 'target'])#
-    dfr_orig2 = pd.DataFrame(dfr_orig1[['target','source']].values, columns=['source', 'target'])
+    dfr_orig1 = pd.DataFrame(data.edge_index.T.cpu().numpy(), columns=['source', 'target'])  #
+    dfr_orig2 = pd.DataFrame(dfr_orig1[['target', 'source']].values, columns=['source', 'target'])
     hidden_edge1 = pd.merge(dfr_orig1, df_pre, on=['source', 'target'])
     hidden_edge2 = pd.merge(dfr_orig2, df_pre, on=['source', 'target'])
     hidden_edge = pd.concat([hidden_edge1, hidden_edge2])
     hidden_edge = df_pre[~df_pre.index.isin(hidden_edge.index)]
     # hidden_edge = hidden_edge.drop(['score','label'], axis=1)
-    print("The accuracy of the model is :%.2f%%" % (acc*100))
+    print("The accuracy of the model is :%.2f%%" % (acc * 100))
     return hidden_edge

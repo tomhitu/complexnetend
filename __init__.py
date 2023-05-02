@@ -14,6 +14,8 @@ from src.cleandata import pos_map_province as posmap
 from src.cleandata import pred_edge as pedge
 from src.cleandata import pred_degree as pdeg
 
+from src.cleandata import GCN_lib as gcnlib
+
 from src.assets import NetworkResilience as nres
 
 
@@ -177,6 +179,11 @@ def degreecount(G):
 def degreedistribution(G):
     degree_count, degree_distribution = nres.plot_Degree_Distribution(G)
     return degree_count, degree_distribution
+
+
+def gethidden(df_node, df_edge, lr, iftrain, foldername):
+    hidden_edge = gcnlib.hidden_edges(df_node, df_edge, lr, iftrain, foldername)
+    return hidden_edge
 
 
 if __name__ == "__main__":

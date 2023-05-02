@@ -17,20 +17,20 @@ if __name__ == "__main__":
     """
     train new model for prediction
     """
-    read_df_path = 'data/clean_data_no_latlon.csv'
-    read_pos_path = 'data/df_pos_with_state_clean.csv'
-    folder_edge_name = 'data/edge_pred_conf'
-    folder_degree_name = 'data/degree_pred_conf'
-    attr_dim = {
-        'num_epochs': 100,
-        'lr': 0.1,
-        'batch_size': 128,
-        'scheduler_step_size': 10,
-        'scheduler_gamma': 0.7,
-        'print_epoch': True,
-        'step_print': 10
-    }
-    exm.testtrainnewmodel(read_df_path, read_pos_path, folder_degree_name, folder_edge_name, attr_dim)
+    # read_df_path = 'data/clean_data_no_latlon.csv'
+    # read_pos_path = 'data/df_pos_with_state_clean.csv'
+    # folder_edge_name = 'data/edge_pred_conf'
+    # folder_degree_name = 'data/degree_pred_conf'
+    # attr_dim = {
+    #     'num_epochs': 100,
+    #     'lr': 0.1,
+    #     'batch_size': 128,
+    #     'scheduler_step_size': 10,
+    #     'scheduler_gamma': 0.7,
+    #     'print_epoch': True,
+    #     'step_print': 10
+    # }
+    # exm.testtrainnewmodel(read_df_path, read_pos_path, folder_degree_name, folder_edge_name, attr_dim)
 
     """
     prediction of edges how to add new node into the graph with lon, lat and pre-trained model
@@ -83,3 +83,10 @@ if __name__ == "__main__":
     # distributionpath = 'data/data1Degree_Distribution.json'
     # exm.testdegreecount(graphic_attack, degreepath, False, False)
     # exm.testdegreedistribution(graphic_attack, distributionpath, False, False)
+
+    hidden_node_path = 'data/dataset1_RL_nodes.csv'
+    hidden_edge_path = 'data/dataset1_RL_edges.csv'
+    hidden_model = 'data/pre_hidden_model.pth'
+    iftrain = True
+    lr = 0.01
+    exm.testgethidden(hidden_node_path, hidden_edge_path, lr, iftrain, hidden_model)
