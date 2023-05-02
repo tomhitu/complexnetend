@@ -3,6 +3,21 @@
 ## Online Web App
 :link: https://complexnetwork.uk/
 
+## Doload the project
+### Back end
+:package: Download the project from github. <br>
+:github: https://github.com/tomhitu/complexnetend <br>
+
+:package: Download the project from git. <br>
+:git: https://github.com/tomhitu/complexnetend.git
+
+### Front end
+:package: Download the project from github. <br>
+:github: https://github.com/tomhitu/complexnetwork <br>
+
+:package: Download the project from git. <br>
+:git: https://github.com/tomhitu/complexnetwork.git <br>
+
 ## Local development
 :package: The `requirements.txt` file stores all the dependencies for the project
 
