@@ -5,17 +5,17 @@
 
 ## Doload the project
 ### Back end
-:moneybag: Download the project from github. <br>
-:zap: https://github.com/tomhitu/complexnetend <br>
+:zap: Download the project from github. <br>
+:star: https://github.com/tomhitu/complexnetend <br>
 
-:link: Download the project from git. <br>
+:zap: Download the project from git. <br>
 :star: https://github.com/tomhitu/complexnetend.git
 
 ### Front end
-:moneybag: Download the project from github. <br>
-:zap: https://github.com/tomhitu/complexnetwork <br>
+:zap: Download the project from github. <br>
+:star: https://github.com/tomhitu/complexnetwork <br>
 
-:link: Download the project from git. <br>
+:zap: Download the project from git. <br>
 :star: https://github.com/tomhitu/complexnetwork.git <br>
 
 ## Local development
