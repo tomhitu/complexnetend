@@ -63,3 +63,23 @@ if __name__ == "__main__":
     # target_node = 1892
     # map_path = 'src/assets/graph.pickle'
     # exm.testshortestway(source_node, target_node, map_path)
+
+
+    """
+    Complex network analysis for resilience properties
+    """
+    # redatapath = 'data/Railway Data_JL.xlsx'
+    # graphic1 = 'src/assets/graph.pickle'
+    # nres_node_path = 'data/dataset1_RL_nodes.csv'
+    # nres_edge_path = 'data/dataset1_RL_edges.csv'
+    # exm.testresiliencedata(redatapath, graphic1, nres_node_path, nres_edge_path, False)
+    # exm.testnetproperties(graphic1)
+
+    # graphic_attack = 'src/assets/graph_attack.pickle'
+    # attackcsv = 'data/data1attack.csv'
+    # attackjson = 'data/data1attack.json'
+    # exm.testgetattackrate(graphic_attack, attackcsv, attackjson, False, False)
+    # degreepath = 'data/data1Degree_Count.json'
+    # distributionpath = 'data/data1Degree_Distribution.json'
+    # exm.testdegreecount(graphic_attack, degreepath, False, False)
+    # exm.testdegreedistribution(graphic_attack, distributionpath, False, False)

@@ -151,5 +151,33 @@ def shortestway(start_node, end_node, G):
     return path, distance
 
 
+def resiliencedata(data):
+    G, feature, edge = nres.get_graph_path(data)
+    G, df_node, df_edge = nres.get_graph(feature, edge)
+    return G, df_node, df_edge
+
+
+def resilienceinfo(G, df_node):
+    return nres.get_node_properties(G, df_node)
+
+
+def netproperties(G):
+    return nres.get_network_properties(G)
+
+
+def getattackrate(G):
+    return nres.plot_attack(G)
+
+
+def degreecount(G):
+    degree_list, count_list = nres.plot_degrees(G)
+    return degree_list, count_list
+
+
+def degreedistribution(G):
+    degree_count, degree_distribution = nres.plot_Degree_Distribution(G)
+    return degree_count, degree_distribution
+
+
 if __name__ == "__main__":
     print("Please run test.py")

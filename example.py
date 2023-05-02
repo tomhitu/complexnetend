@@ -5,6 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 import json
 import numpy
 import pickle
+import matplotlib.pyplot as plt
 
 
 class NumpyEncoder(json.JSONEncoder):
@@ -149,3 +150,120 @@ def testshortestway(source, target, map_path):
     path, distance = tbox.shortestway(source, target, G_loaded)
     print(f'path: {path}')
     print(f'distance: {distance}')
+
+
+def testresiliencedata(path, graphic_path, node_path, edge_path, ifsave=True):
+    data = pd.read_excel(path)  # read
+    G, df_node, df_edge = tbox.resiliencedata(data)
+    print(df_node.head(2))
+    print(df_edge.head(2))
+
+# --------------------------get the node and edge for node properties and GCN model ------------------------------------
+    #get the dataset1_RL_ data for CGN model
+    df_node = tbox.resilienceinfo(G, df_node)
+    if ifsave:
+        with open(graphic_path, "wb") as f:
+            pickle.dump(G, f)
+        df_node.to_csv(node_path, index=False)
+        df_edge.to_csv(edge_path, index=False)
+
+
+def testnetproperties(G_path):
+    with(open(G_path, "rb")) as f:
+        G = pickle.load(f)
+    num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency = tbox.netproperties(
+        G)
+    print('node number：', num_nodes)
+    print('edge number：', num_edges)
+    print('The number of connected graphs:', num_connected_components)
+    print('The number of nodes of the largest connected component：', Max_components_node)
+    print('The number of edges of the largest connected component：', Max_components_edges)
+    print('The k-core of the largest connected component：', k_cores)
+    print('The network density of the largest connected component：', density)
+    print('Diameter of the largest connected component：', diameter)
+    print('Average distance of the largest connected component：', avg_distance)
+    print('The efficiency of the largest connected component：', efficiency)
+
+
+def testgetattackrate(G_path, attackcsv, attackjson, ifsave=True, ifshow=False):
+    with(open(G_path, "rb")) as f:
+        G = pickle.load(f)
+    Attack_Ratio, relative_size, relative_size_deg, relative_size_betw, relative_size_kshell, relative_size_ci = tbox.getattackrate(
+        G)
+
+    if ifsave:
+        # save csv
+        save = pd.DataFrame(
+            {'Attack_Ratio': Attack_Ratio, 'relative_size': relative_size, 'relative_size_deg': relative_size_deg,
+             'relative_size_betw': relative_size_betw, 'relative_size_kshell': relative_size_kshell,
+             'relative_size_ci': relative_size_ci})
+        save.to_csv(attackcsv, index=False)
+
+        Attack_Ratio = Attack_Ratio.tolist()
+
+        data = {"Attack_Ratio": Attack_Ratio, "relative_size": relative_size, "relative_size_deg": relative_size_deg,
+                "relative_size_betw": relative_size_betw, "relative_size_kshell": relative_size_kshell,
+                "relative_size_ci": relative_size_ci}
+
+        with open(attackjson, 'w') as f:
+            json.dump(data, f)
+
+    if ifshow:
+        plt.figure(figsize=(10, 8))
+        plt.plot(Attack_Ratio, relative_size, 'bo-', label='Random Attack')
+        plt.plot(Attack_Ratio, relative_size_deg, 'ro-', label='Degree Attack')
+        plt.plot(Attack_Ratio, relative_size_betw, 'go-', label='Betweenness Attack')
+        plt.plot(Attack_Ratio, relative_size_kshell, 'yo-', label='Kshell Attack')
+        plt.plot(Attack_Ratio, relative_size_ci, 'ko-', label='Collective Influence Attack')
+        plt.title("Relative Size of Largest Connected Component")
+        plt.ylabel("Relative Size")
+        plt.xlabel("Attack Ratio")
+        plt.legend()
+        plt.show()
+
+
+def testdegreecount(G_path, degreejson, ifsave=True, ifshow=False):
+    with(open(G_path, "rb")) as f:
+        G = pickle.load(f)
+    degree_list, count_list = tbox.degreecount(G)
+    print(f'degree_list: {degree_list}')
+    print(f'count_list: {count_list}')
+    if ifsave:
+        data = {"degree_list": degree_list, "count_list": count_list}
+        with open(degreejson, 'w') as f:
+            json.dump(data, f)
+
+    if ifshow:
+        plt.plot(degree_list, count_list, 'bo-')
+        plt.title("Degree-Count Relationship")
+        plt.ylabel("Count")
+        plt.xlabel("Degree")
+        plt.show()
+
+
+def testdegreedistribution(G_path, degreejson, ifsave=True, ifshow=False):
+    with(open(G_path, "rb")) as f:
+        G = pickle.load(f)
+    degree_count, degree_distribution = tbox.degreedistribution(G)
+    print(f'degree_count: {degree_count}')
+    print(f'degree_distribution: {degree_distribution}')
+
+    if ifsave:
+        degree_count = list(degree_count)
+        data = {"degree_count": degree_count, "degree_distribution": degree_distribution}
+        with open(degreejson, 'w') as f:
+            json.dump(data, f)
+
+    if ifshow:
+        plt.bar(degree_count, degree_distribution)
+        plt.title("Degree Distribution")
+        plt.xlabel("Degree")
+        plt.ylabel("Fraction of Nodes")
+        plt.show()
+
+        plt.scatter(degree_count, degree_distribution)
+        # 将横坐标和纵坐标设置为对数比例
+        plt.xscale('log')
+        plt.yscale('log')
+
+
