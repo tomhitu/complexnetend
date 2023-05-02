@@ -7,7 +7,7 @@
 :fire: Overview Page <br>
 :link: https://complexnetwork.uk/overview.html<br>
 
-## Doload the project
+## Download the project
 ### Back end
 :zap: Download the project from github. <br>
 :star: https://github.com/tomhitu/complexnetend <br>
