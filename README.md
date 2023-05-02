@@ -1,7 +1,7 @@
 # Welcom to use complex-node project
 
 ## Online Web App
-:network: https://complexnetwork.uk/
+:global: https://complexnetwork.uk/
 
 ## Local development
 :package: The `requirements.txt` file stores all the dependencies for the project
