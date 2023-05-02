@@ -54,6 +54,16 @@ def find_shortest_path_with_attr(G, source, target, edge_attr):
     # Return the shortest path, travel distance, and travel time
     return shortest_path, travel_distance, travel_time
 
+def find_shortest_path_without_time(G, source, target, edge_attr):
+    # Find the shortest path between the source and target nodes
+    shortest_path = nx.shortest_path(G, source=source, target=target, weight=edge_attr)
+
+    # Compute the total travel distance and time along the shortest path
+    travel_distance = sum(G[u][v][edge_attr] for u, v in zip(shortest_path[:-1], shortest_path[1:]))
+
+    # Return the shortest path, travel distance, and travel time
+    return shortest_path, travel_distance
+
 
 def getG(snode, tnode):
     current_path = os.path.abspath(os.path.dirname(__file__))
@@ -69,6 +79,15 @@ def getG(snode, tnode):
     print("Shortest ", edge_attr, " from node", source_node, "to node", target_node, ":", shortest_path)
     print("Total travel distance:", travel_distance)
     return shortest_path, travel_distance, travel_time
+
+def getG_any(snode, tnode, G_pre):
+    source_node = int(snode)
+    target_node = int(tnode)
+    edge_attr = 'dist_to_tg'
+    shortest_path, travel_distance = find_shortest_path_without_time(G_pre, source_node, target_node, edge_attr=edge_attr)
+    print("Shortest ", edge_attr, " from node", source_node, "to node", target_node, ":", shortest_path)
+    print("Total travel distance:", travel_distance)
+    return shortest_path, travel_distance
 
 
 # check if the start node and end node are in the nodes

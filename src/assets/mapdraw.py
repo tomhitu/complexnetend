@@ -203,9 +203,7 @@ def getG(snode, tnode):
     return shortest_path, travel_distance, travel_time
 
 
-def setdatajson():
-    nodes_cluster = pd.read_csv('../../data/df_pos_cluster.csv', encoding='ISO-8859-1')
-    edges_cluster = pd.read_csv('../../data/df_edge_cluster_light.csv')
+def setdatajson(nodes_cluster, edges_cluster):
     nodes = []
     # state_num
     # degree
@@ -334,10 +332,11 @@ def setdatajson():
     # b = json.dump(a, open('railway_data.json', 'w'), cls=NumpyEncoder)
     # c = json.dump(maxclusternum, open('maxclusternum.json', 'w'), cls=NumpyEncoder)
     # d = json.dump(maxedgenum, open('maxedgenum.json', 'w'), cls=NumpyEncoder)
+    return nodes, edges, maxclusternum, maxedgenum
 
 
 if __name__ == '__main__':
     # app = initmap('railway')
     # app.get_map()
     # getG()
-    setdatajson()
+    setdatajson('../../data/df_pos_cluster.csv', '../../data/df_edge_cluster_light.csv')

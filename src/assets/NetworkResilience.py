@@ -254,6 +254,24 @@ def gethidden(type):
     return hiddennodes, hiddenedges
 
 
+#---------------------------------------------------detele node ------------------------------------------------------------
+def delete_node_any(id, G_pre):
+    G_delete = G_pre.copy()
+    G_delete.remove_node(id)
+    num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency = get_network_properties(G_pre)
+    str_kshell = str(k_cores)
+    before = [str(num_nodes), str(num_edges), str(num_connected_components), str(Max_components_node), str(Max_components_edges), str_kshell,
+              str(density), str(diameter), str(avg_distance), str(efficiency)]
+    df_G = pd.DataFrame({'G_before': [num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency]}, index=['Number of Nodes', 'Number of Edges', 'Number of Connected Components', 'Size of Largest Connected Component', 'Number of Edges in Largest Connected Component', 'K-Cores', 'Density', 'Diameter', 'Average Distance', 'Efficiency'])
+    num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency = get_network_properties(G_delete)
+    str_kshell = str(k_cores)
+    after = [str(num_nodes), str(num_edges), str(num_connected_components), str(Max_components_node), str(Max_components_edges), str_kshell,
+              str(density), str(diameter), str(avg_distance), str(efficiency)]
+    df_G['G_after'] = [num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, str_kshell, density, diameter, avg_distance, efficiency]
+    print(df_G)
+
+    return before, after
+
 
 #---------------------------------------------------detele node ------------------------------------------------------------
 def delete_node(id, num):
