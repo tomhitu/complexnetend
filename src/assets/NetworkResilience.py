@@ -81,14 +81,14 @@ def get_data(df_node, df_edge):
     df_test_edge = df_edge.rename(columns={'source': 'start', 'target': 'end'})
     x = torch.tensor(df_test_node.values, dtype=torch.float)
     edge_index = torch.tensor([df_test_edge['start'].values,df_test_edge['end'].values], dtype=torch.long)
-    # 创建Data对象
+    # create data
     data = Data(x=x, edge_index=edge_index)
-    # 创建NetworkX图对象
+    # create NetworkX graphic
     G = nx.Graph()
-    # 添加节点和标签
+    # add nodes and attributes
     for i in range(data.num_nodes):
         G.add_node(i)
-    # 添加边
+    # add edges
     for j in range(data.edge_index.shape[1]):
         src = data.edge_index[0, j]
         dst = data.edge_index[1, j]
@@ -186,16 +186,16 @@ def get_network_properties(G):
     diameter = nx.diameter(Max_components_G)
     avg_distance = nx.average_shortest_path_length(Max_components_G)
     efficiency = nx.global_efficiency(Max_components_G)
-    # print('节点数：', num_nodes)
-    # print('边数：', num_edges)
-    # print('连通图的数量：', num_connected_components)
-    # print('最大连通分量的节点数：', Max_components_node)
-    # print('最大连通分量的边数：', Max_components_node)
-    # print('最大连通分量的k核：', k_cores)
-    # print('最大连通分量的网络密度：', density)
-    # print('最大连通分量的直径：', diameter)
-    # print('最大连通分量的平均距离：', avg_distance)
-    # print('最大连通分量的效率：', efficiency)
+    # print('num_nodes: ', num_nodes)
+    # print('num_edges: ', num_edges)
+    # print('num_connected_components: ', num_connected_components)
+    # print('Max_components_node: ', Max_components_node)
+    # print('Max_components_node: ', Max_components_node)
+    # print('k_cores: ', k_cores)
+    # print('density: ', density)
+    # print('diameter: ', diameter)
+    # print('avg_distance: ', avg_distance)
+    # print('efficiency: ', efficiency)
     return num_nodes, num_edges, num_connected_components, Max_components_node, Max_components_edges, k_cores, density, diameter, avg_distance, efficiency
 
 
@@ -299,14 +299,14 @@ def delete_node(id, num):
 
 def plot_degrees(G):
     degrees = dict(G.degree())
-    # 统计每个度值的节点数量
+    # sum up the number of nodes with the same degree
     degree_count = {}
     for node, degree in degrees.items():
         if degree in degree_count:
             degree_count[degree] += 1
         else:
             degree_count[degree] = 1
-    # 将字典转换为两个列表，用于绘图
+    # transfer dictionary to list
     degree_list = sorted(degree_count.keys())
     count_list = [degree_count[k] for k in degree_list]
     return degree_list, count_list

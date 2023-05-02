@@ -30,11 +30,12 @@ Split_F = T.Compose([
 
 from torch_geometric.utils import  negative_sampling
 def negative_sample(data):
-    # 从训练集中采样与正边相同数量的负边
+    # Sampling the same number of negative edges as positive edges from the training set
     neg_edge_label_index = negative_sampling(
         edge_index=data.edge_index, num_nodes=data.num_nodes,
         num_neg_samples=data.edge_label_index.size(1), method='sparse')
-    # print(neg_edge_index.size(1))   # 3642条负边，即每次采样与训练集中正边数量一致的负边
+    # print(neg_edge_index.size(1))   # 3642 negative edges,
+    # i.e. the same number of negative edges as the number of positive edges in the training set are sampled each time
     ALLedge_label_index = torch.cat(
         [data.edge_label_index, neg_edge_label_index],
         dim=-1,
@@ -62,12 +63,13 @@ class GCN(torch.nn.Module):
         return x
 
     def decode(self, z, edge_label_index):
-        # z所有节点的表示向量，一行为所有特征
-        start_node = z[edge_label_index[0]]#调用起始列所有点的特征值，所有起始点的特征值所以行是起始点数量列是特征数量
+        # all nodes in z as vertex
+        start_node = z[edge_label_index[0]]  #
         end_node = z[edge_label_index[1]]
         # print(dst.size())   # (7284, 64)
-        result = (start_node * end_node).sum(dim=-1)#按所有位置相乘一个一个然后按点的特征值相加即一行中的所有列相加
-        # print(r.size())   (7284)所有点连边的特征值，即行数为节点对，即连边的最后特征值
+        result = (start_node * end_node).sum(dim=-1)  # Call the eigenvalues of all points in the starting column
+        # print(r.size())   (7284)
+        # Eigenvalues of all point-connected edges, i.e. the number of rows is the last eigenvalue of the node pair, i.e. the connected edge
         return result
 
     def forward(self, x, edge_index, edge_label_index):
@@ -81,7 +83,7 @@ def test(model, data):
     model.eval()
     with torch.no_grad():
         z = model.encode(data.x, data.edge_index)
-        out = model.decode(z, data.edge_label_index).view(-1).sigmoid()#将out作为输入将其转化成0-1之间的概率
+        out = model.decode(z, data.edge_label_index).view(-1).sigmoid()  # use out as input and transfer to the rate between 0 to 1
         model.train()
     auc = roc_auc_score(data.edge_label.cpu().numpy(), out.cpu().numpy())
     return auc
@@ -134,7 +136,8 @@ def get_all_edges(num_nodes,train_data):
     return data
 
 
-# 遍历所有连边 input the train_data and Threshold,choose the type 1 is get the hidden edges csv file ,0 is get the hidden list as dataframe
+# input the train_data and Threshold,choose the type 1 is get the hidden edges csv file ,0 is get the hidden list as dataframe
+# list all edges
 def get_hidden_edges(dataname,Threshold,model,type):
     node_num = 2708
     train_data = torch.load(dataname + '.pth')
@@ -159,7 +162,7 @@ def get_hidden_edges(dataname,Threshold,model,type):
         return df_pre
 
 
-#根据点和边的csv文件，返回模型
+# input the node and edges csv file and the lrdata, return the model
 def train_save_model(node,edges,lrdata):
     df_node = pd.read_csv(node+'.csv')
     df_edge = pd.read_csv(edges + '.csv')
@@ -171,8 +174,7 @@ def train_save_model(node,edges,lrdata):
     torch.save(model.state_dict(), 'pre_hidden_model.pth')
 
 
-
-#给定一个数据的点和边还有要预测的边，返回预测的边的得分
+# given a node and edge csv file and the edges to predict, return the score of the edges
 def get_pre_edges(df_node,df_edge,pre_edges,type, lrdata):
     data = get_data(df_node,df_edge)
     train_data, val_data, test_data = Split_F(data)
